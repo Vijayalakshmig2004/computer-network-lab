@@ -1,0 +1,67 @@
+#include <stdio.h>
+
+// Function to perform bit stuffing
+void bit_stuffing(char* input, int input_length, char* stuffed_output, int* stuffed_length) {
+    int count = 0;
+    *stuffed_length = 0;
+
+    for (int i = 0; i < input_length; i++) {
+        if (input[i] == '1') {
+            count++;
+        } else {
+            count = 0;
+        }
+
+        stuffed_output[*stuffed_length] = input[i];
+        (*stuffed_length)++;
+
+        if (count == 5) { // If five consecutive 1s encountered, stuff a 0 bit
+            stuffed_output[*stuffed_length] = '0';
+            (*stuffed_length)++;
+            count = 0;
+        }
+    }
+}
+
+// Function to perform bit unstuffing
+void bit_unstuffing(char* stuffed_input, int stuffed_length, char* output, int* output_length) {
+    int count = 0;
+    *output_length = 0;
+
+    for (int i = 0; i < stuffed_length; i++) {
+        if (stuffed_input[i] == '1') {
+            count++;
+        } else {
+            count = 0;
+        }
+
+        output[*output_length] = stuffed_input[i];
+        (*output_length)++;
+
+        if (count == 5 && i != stuffed_length - 1 && stuffed_input[i + 1] == '0') {
+            i++; // Skip the stuffed 0 bit
+            count = 0;
+        }
+    }
+}
+
+int main() {
+    char input[] = "111110110111111101111";
+    int input_length = sizeof(input) - 1;
+
+    char stuffed_output[100];
+    int stuffed_length;
+
+    char output[100];
+    int output_length;
+
+    // Perform bit stuffing
+    bit_stuffing(input, input_length, stuffed_output, &stuffed_length);
+    printf("Stuffed Output: %.*s\n", stuffed_length, stuffed_output);
+
+    // Perform bit unstuffing
+    bit_unstuffing(stuffed_output, stuffed_length, output, &output_length);
+    printf("Unstuffed Output: %.*s\n", output_length, output);
+
+    return 0;
+}
